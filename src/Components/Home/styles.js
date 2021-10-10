@@ -55,3 +55,9 @@ export const MinAndMax = styled.h5`
     font-weight: 400;
     margin-top: 40px;
 `
+
+export const Input = styled.input`
+    color: white;
+    background: none;
+    border-color: white;
+`;
