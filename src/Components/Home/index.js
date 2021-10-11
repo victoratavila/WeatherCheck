@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { City, Input, Degree, CurrentWheaterIcon, NextDaysWeather, DayOfWeek, DayOfMonth, MinAndMax } from './styles';
+import { City, Degree, CurrentWheaterIcon, NextDaysWeather, DayOfWeek, DayOfMonth, MinAndMax } from './styles';
 import RainIcon from '../../assets/rain.svg';
 import SunIcon from '../../assets/sun.svg';
 import CloudyDayIcon from '../../assets/cloudyDay.svg';
@@ -18,7 +18,6 @@ const Home = () => {
     const [ weatherFound, setWeather ] = useState(null);
     const [ states, setStates ] = useState(null);
     const [ modalShow, setModalShow ] = React.useState(false);
-    const [  cities, setCities ] = useState(null);
 
     const key = process.env.REACT_APP_API_KEY;
 
@@ -59,15 +58,6 @@ const Home = () => {
     const getStatesList = async () => {
         await axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados/').then(list => {
             setStates(list.data);
-        }).catch(err => {
-            console.log(err);
-        })
-    }
-
-    const getCitiesList = async (stateId) => {
-        await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${stateId}/municipios`).then(cityList => {
-            setCities(cityList.data);
-            console.log(cityList.data);
         }).catch(err => {
             console.log(err);
         })
@@ -135,30 +125,37 @@ const Home = () => {
 
     const handleChanges = (ev) => {
         console.log(ev.target.value);
-        localStorage.setItem('selectedStateId', ev.target.value);
-
-        getCitiesList(ev.target.value);
     }
 
-    const SearchInputs = () => {
-        return (
-            <div>
-                
-        {states && (
-        <Form.Select aria-label="Default select example" onChange = {handleChanges}>
-        <option>Selecione o estado</option>
+    const searchCity = async (ev) => {
+        ev.preventDefault();
+        const selectedCity = ev.target.cityNameInput.value;
+        const selectedState = (ev.target.stateSelected.value);
+        
+        if(selectedCity && selectedState !== null && selectedCity && selectedState !== undefined){
 
-        {states.map(list => {
-            return <option key = {list.id} value={list.id}> {list.sigla} </option>
-        })}
-        </Form.Select>  
-    )} 
- 
-    <br/>
+            // If the item is expired, delete the item from storage
+            localStorage.removeItem('weatherResults');
+            const now = new Date();
 
- 
-            </div>
-        )
+            await api.get(`https://api.hgbrasil.com/weather?format=json-cors&key=${key}&city_name=${selectedCity},${selectedState}`).then(data => {
+            setModalShow(false);
+            setWeather(data.data.results);
+    
+                const storeResults = {
+                    value: data.data.results,
+                    expiration: now.getTime() + 900000,
+                    userCity: selectedCity
+                }
+    
+                localStorage.setItem('weatherResults', JSON.stringify(storeResults));
+    
+            }).catch(err => {
+                console.log(err);
+            })
+        } 
+
+        
     }
 
     function MyVerticallyCenteredModal(props) {
@@ -176,12 +173,30 @@ const Home = () => {
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <SearchInputs/>
+                <Form onSubmit = {searchCity}>
+                {states && (
+                <Form.Select id="stateSelected" required = {true} aria-label="Default select example" onChange = {handleChanges}>
+                <option>Selecione o estado</option>
+
+                {states.map(list => {
+                    return <option key = {list.id} value={list.sigla}> {list.sigla} </option>
+                })}
+                </Form.Select>  
+
+            )} <br/>
+
+        
+                <Form.Group required = {true} className="test" controlId="cityNameInput">
+                    <Form.Control type="text" placeholder="Digite o nome da cidade" />
+                </Form.Group> <br/>
+
+                <Button variant="primary" type="submit">
+                    Buscar
+                </Button>
+
+            </Form>
             </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={props.onHide}>Fechar</Button>
-              <Button onClick={props.onHide}>Buscar</Button>
-            </Modal.Footer>
+        
           </Modal>
         );
       }
@@ -192,7 +207,9 @@ const Home = () => {
 
        
 
-        <div className = "container"> <br/> <br/> <br/> 
+        <div className = "container"> <br/> <br/> 
+
+       
 
             {weatherFound ? (
 
