@@ -4,10 +4,12 @@ import RainIcon from '../../assets/rain.svg';
 import SunIcon from '../../assets/sun.svg';
 import CloudyDayIcon from '../../assets/cloudyDay.svg';
 import CloudyNightIcon from '../../assets/cloudyNight.svg'
+import StormIcon from '../../assets/storm.svg';
 import DayLabel from '../../Components/Labels/DayLabel';
 import RainLabel from '../../Components/Labels/RainLabel';
 import NightLabel from '../../Components/Labels/NightLabel';
 import CloudyLabel from '../../Components/Labels/CloudyLabel';
+import StormLabel from '../../Components/Labels/StormLabel';
 import {Container, Row, Col, Form, Modal, Button} from 'react-bootstrap';
 import api from '../../config/api';
 import axios from 'axios';
@@ -18,17 +20,14 @@ const Home = () => {
     const [ weatherFound, setWeather ] = useState(null);
     const [ states, setStates ] = useState(null);
     const [ modalShow, setModalShow ] = React.useState(false);
-
     const key = process.env.REACT_APP_API_KEY;
 
-
     const getWeather = async (city) => {
-
         const storage = localStorage.getItem('weatherResults');
         const now = new Date();
         const data = JSON.parse(storage);
 
-        if(storage === null || now.getTime() > data.expiration ){
+        if(storage === null || now.getTime() > data.expiration){
 
             // If the item is expired, delete the item from storage
             localStorage.removeItem('weatherResults');
@@ -48,8 +47,29 @@ const Home = () => {
                 console.log(err);
             })
         } else {
-            // If there is valid on localstorage, add it to the state
-           setWeather(data.value);
+            const storedCity = slugify(data.value.city.split(',')[0]); 
+            if(storedCity !== city){
+                  // If the item is expired, delete the item from storage
+            localStorage.removeItem('weatherResults');
+
+            await api.get(`https://api.hgbrasil.com/weather?format=json-cors&key=${key}&city_name=${city}`).then(data => {
+                setWeather(data.data.results);
+    
+                const storeResults = {
+                    value: data.data.results,
+                    expiration: now.getTime() + 900000,
+                    userCity: city
+                }
+    
+                localStorage.setItem('weatherResults', JSON.stringify(storeResults));
+    
+            }).catch(err => {
+                console.log(err);
+            })
+            } else {
+                setWeather(data.value);
+            }
+         
         }
 
       
@@ -102,6 +122,10 @@ const Home = () => {
 
         if(weatherFound.condition_slug === 'cloudly_night'){
             return CloudyNightIcon;
+        }
+
+        if(weatherFound.condition_slug === 'storm'){
+            return StormIcon;
         }
         
     }
@@ -207,7 +231,7 @@ const Home = () => {
 
        
 
-        <div className = "container"> <br/> <br/> 
+        <div className = "container"> <br/> <br/> <br/> 
 
        
 
@@ -223,6 +247,7 @@ const Home = () => {
         {weatherFound.currently === 'dia' ? <DayLabel/> : <NightLabel/> }
         {weatherFound.condition_slug === 'rain' ? <RainLabel/> : ''}
         {weatherFound.condition_slug === 'cloud' || weatherFound.condition_slug === 'cloudly_day' || weatherFound.condition_slug === 'cloudly_night' ? <CloudyLabel/> : ''}
+        {weatherFound.condition_slug === 'storm' ? <StormLabel/> : ''}
     </div>
 
     

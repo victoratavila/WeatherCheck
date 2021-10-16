@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.js": "/static/js/main.54f5ab42.chunk.js",
+    "main.js.map": "/static/js/main.54f5ab42.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.a92c84aa.js",
+    "runtime-main.js.map": "/static/js/runtime-main.a92c84aa.js.map",
+    "static/css/2.28bb0c3d.chunk.css": "/static/css/2.28bb0c3d.chunk.css",
+    "static/js/2.01c58dd4.chunk.js": "/static/js/2.01c58dd4.chunk.js",
+    "static/js/2.01c58dd4.chunk.js.map": "/static/js/2.01c58dd4.chunk.js.map",
+    "static/js/3.b97af6f2.chunk.js": "/static/js/3.b97af6f2.chunk.js",
+    "static/js/3.b97af6f2.chunk.js.map": "/static/js/3.b97af6f2.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/2.28bb0c3d.chunk.css.map": "/static/css/2.28bb0c3d.chunk.css.map",
+    "static/js/2.01c58dd4.chunk.js.LICENSE.txt": "/static/js/2.01c58dd4.chunk.js.LICENSE.txt",
+    "static/media/cloudyDay.2b02d8a0.svg": "/static/media/cloudyDay.2b02d8a0.svg",
+    "static/media/cloudyNight.c92cb631.svg": "/static/media/cloudyNight.c92cb631.svg",
+    "static/media/rain.13cd5b50.svg": "/static/media/rain.13cd5b50.svg",
+    "static/media/sun.ea32b0b9.svg": "/static/media/sun.ea32b0b9.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.a92c84aa.js",
+    "static/css/2.28bb0c3d.chunk.css",
+    "static/js/2.01c58dd4.chunk.js",
+    "static/js/main.54f5ab42.chunk.js"
+  ]
+}
